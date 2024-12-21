@@ -1,6 +1,6 @@
 
 
-databaseName = "employee.txt"
+databaseName = r"lesson-6\homework\employee.txt"
 
 
 user_menu_list = ["Add new employee record",
@@ -10,13 +10,44 @@ user_menu_list = ["Add new employee record",
         "Delete an employee record",
         "Exit"]
 
-def id_builder():
+def greating():
+    print()
+    print("*"*40)
+    print("Welcome Customer Manager Software".center(40))
+    print("*"*40)
+    print()
+greating()
+
+
+def max_employee_id():
     """
-    Add ID for next employee
+    Find max employee id from text file  when program starts
     """
     with open(file=databaseName, mode="r") as f:
-        lastID = int(f.readlines()[-1].strip().split(", ")[0])
-    return lastID + 1
+        if f.read(1):
+            f.seek(0)
+            lastID = int(f.readlines()[-1].split(", ")[0])
+            return lastID
+        else:
+            #initial value for employee id
+            return   1000 
+
+
+
+
+def id_builder(start_id=None):
+    """
+    Generate unique IDs for employees
+    """
+    if start_id is None:
+        current_id = max_employee_id()  # Get the maximum ID from the database
+    else:
+        current_id = start_id
+    
+    while True:
+        current_id += 1
+        yield current_id
+
 
 
 def print_user_menu(user_menu_list):
@@ -28,13 +59,14 @@ def print_user_menu(user_menu_list):
         print(f"{index+1}: {element}")
 
 
+employee_id = id_builder()
 def add_employee(name, position, solary):
     """
     Add new employee
     """
-    employee_id = id_builder()
-    with open(file="employee.txt", mode="a") as f:
-        f.write(f"{employee_id}, {name}, {position}, {solary}\n")
+    with open(file=databaseName, mode="a") as f:
+        f.write(f"{next(employee_id)}, {name}, {position}, {solary}\n")
+
 
 def view_employee():
     """
@@ -135,19 +167,22 @@ def display_menu(option):
 
 
 
-while True:
-    print_user_menu(user_menu_list)
-    try:
-        option = int(input("Choose an option: "))
-        if not display_menu(option):
-            break
-    except ValueError:
-        print("Invalid input! Please enter a number.")
+def main():
+    """
+    Main function to run programm
+    """
+    greating()
+    while True:
+        print_user_menu(user_menu_list)
+        try:
+            option = int(input("Choose an option: "))
+            if not display_menu(option):
+                break
+        except ValueError:
+            print("Invalid input! Please enter a number.")
 
 
-
-
-
-
+#start programm
+main()
 
 

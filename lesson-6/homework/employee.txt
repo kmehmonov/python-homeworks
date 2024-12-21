@@ -1,0 +1,6 @@
+1001, kamoliddin, direktor, 10000
+1002, bekzod, farrosh, 6000
+1003, Ali, oqituvchi, 9000
+1004, Otabek, qorovul, 11000
+1005, olinjon, behi, 4521
+1006, olinjon, direktor, 5648
