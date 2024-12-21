@@ -1,0 +1,11 @@
+2, kamoliddin, buxgalter, 1000
+3, kamoliddin, buxgalter, 1000
+4, kamoliddin, buxgalter, 1000
+5, Jamshid, buxgalter, 2000
+6, Sora, buxgalter, 1000
+
+7, kamoliddin, buxgalter, 1000
+8, kamoliddin, buxgalter, 1000
+9, kamoliddin, buxgalter, 1000
+10, Kamoliddin, kurator, 5000
+11, Ali, direktor, 10000
