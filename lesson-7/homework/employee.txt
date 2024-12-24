@@ -1,0 +1,50 @@
+{
+    "45237": {
+        "id": 45237,
+        "name": "Jamshid",
+        "position": "Direktor",
+        "salary": 5.0
+    },
+    "56369": {
+        "id": 56369,
+        "name": "Jamshid",
+        "position": "Teacher",
+        "salary": 4520.0
+    },
+    "85693": {
+        "id": 85693,
+        "name": "Tursunpulat",
+        "position": "Kutubxonachi",
+        "salary": 59648.0
+    },
+    "5639": {
+        "id": 5639,
+        "name": "Durdona",
+        "position": "Farrosh",
+        "salary": 9000.0
+    },
+    "56982": {
+        "id": 56982,
+        "name": "Check",
+        "position": "Check",
+        "salary": 5822.0
+    },
+    "4343": {
+        "id": 4343,
+        "name": "Sinash",
+        "position": "Sinash",
+        "salary": 5000.0
+    },
+    "4344": {
+        "id": 4344,
+        "name": "Kamoliddin",
+        "position": "Direktor",
+        "salary": 5000.0
+    },
+    "4563": {
+        "id": 4563,
+        "name": "Yangi",
+        "position": "Yangi",
+        "salary": 5000.0
+    }
+}
