@@ -1,0 +1,14 @@
+{
+    "45236": {
+        "id": 45236,
+        "name": "Kamoliddin",
+        "position": "O'qituvchi",
+        "salary": 5.0
+    },
+    "45237": {
+        "id": 45237,
+        "name": "Jamshid",
+        "position": "O'qituvchi",
+        "salary": 5.0
+    }
+}
