@@ -304,9 +304,12 @@ def parse_input(prompt: str, input_type: type) -> any:
     """
     while True:
         try:
-            return input_type(input(prompt).strip())
+            value = input_type(input(prompt).strip())
+            if value < 0:
+                raise ValueError("Input must be a non-negative number.")
+            return value
         except ValueError:
-            print(f"Invalid input! Please enter a valid {input_type.__name__}.")
+            print(f"Invalid input! Please enter a valid non negative {input_type.__name__}.")
 
 
 def interface():
