@@ -2,208 +2,315 @@ import json
 
 class Account:
     """
-    Represents a bank account.
+    A class to represent a bank account.
 
     Attributes:
-        account_number (int): The unique identifier for the account.
-        name (str): The name associated with the account holder.
-        balance (float | int): The balance in the account.
-
-    Methods:
-        to_dict: Converts the account data to a dictionary format for saving to a file.
-        from_dict: Class method to create an Account instance from a dictionary.
+    ----------
+    account_number : int
+        The account number of the account.
+    name : str
+        The name of the account holder.
+    balance : float
+        The balance of the account.
     """
-    def __init__(self, account_number: int, name: str, balance: float | int = 0) -> None:
-        """
-        Initializes a new bank account.
 
-        Args:
-            account_number (int): Unique identifier for the account.
-            name (str): Account holder's name.
-            balance (float | int): Initial balance (default is 0).
+    def __init__(self, account_number: int, name: str, initial_deposit: float = 0) -> None:
+        """
+        Constructs all the necessary attributes for the account object.
+
+        Parameters:
+        ----------
+        account_number : int
+            The account number of the account.
+        name : str
+            The name of the account holder.
+        initial_deposit : float, optional
+            The initial deposit amount (default is 0).
         """
         self.account_number = account_number
-        self.name = name.capitalize()
-        self.balance = balance
+        self.name = name
+        self.balance = initial_deposit
 
-    def __str__(self):
+    @property
+    def account_number(self) -> int:
+        """Gets the account number."""
+        return self._account_number
+
+    @account_number.setter
+    def account_number(self, value: int) -> None:
         """
-        Returns a string representation of the Account instance.
+        Sets the account number.
+
+        Parameters:
+        ----------
+        value : int
+            The account number to set.
+
+        Raises:
+        ------
+        ValueError
+            If the account number is not a positive integer.
         """
-        return f"Account({self.account_number}, {self.name}, {self.balance})"
-    
+        if not isinstance(value, int) or value <= 0:
+            raise ValueError("Account number must be a positive integer.")
+        self._account_number = value
+
+    @property
+    def name(self) -> str:
+        """Gets the name of the account holder."""
+        return self._name
+
+    @name.setter
+    def name(self, value: str) -> None:
+        """
+        Sets the name of the account holder.
+
+        Parameters:
+        ----------
+        value : str
+            The name to set.
+
+        Raises:
+        ------
+        ValueError
+            If the name is not a string, is empty, or contains non-alphabetic characters.
+        """
+        value = value.strip()
+        if not isinstance(value, str):
+            raise ValueError("Name must be a string.")
+        if not value:
+            raise ValueError("Name cannot be empty.")
+        if not value.isalpha():
+            raise ValueError("Name must contain only alphabetic characters.")
+        self._name = value.capitalize()
+
+    @property
+    def balance(self) -> float:
+        """Gets the balance of the account."""
+        return self._balance
+
+    @balance.setter
+    def balance(self, value: float) -> None:
+        """
+        Sets the balance of the account.
+
+        Parameters:
+        ----------
+        value : float
+            The balance to set.
+
+        Raises:
+        ------
+        ValueError
+            If the balance is not a non-negative number.
+        """
+        if not isinstance(value, (int, float)) or value < 0:
+            raise ValueError("Balance must be a non-negative number.")
+        self._balance = float(value)
+
+    def __str__(self) -> str:
+        """Returns a string representation of the account."""
+        return f"Account Number: {self.account_number}\nName: {self.name}\nBalance: {self.balance:.2f}"
+
     def to_dict(self) -> dict:
-        """
-        Converts the account instance to a dictionary.
-
-        Returns:
-            dict: A dictionary representation of the account.
-        """
+        """Converts the account object to a dictionary."""
         return {
             "account_number": self.account_number,
             "name": self.name,
-            "balance": self.balance
+            "balance": self.balance,
         }
-    
-    @classmethod
-    def from_dict(cls, data) -> "Account":
-        """
-        Creates an Account instance from a dictionary.
 
-        Args:
-            data (dict): The dictionary containing account data.
+    @classmethod
+    def from_dict(cls, data: dict) -> "Account":
+        """
+        Creates an account object from a dictionary.
+
+        Parameters:
+        ----------
+        data : dict
+            The dictionary containing account data.
 
         Returns:
-            Account: A new Account instance.
+        -------
+        Account
+            The account object created from the dictionary.
         """
         return cls(data["account_number"], data["name"], data["balance"])
 
+
 class Bank:
     """
-    Represents a bank managing multiple accounts.
+    A class to represent a bank.
 
     Attributes:
-        filename (str): The name of the file used for saving and loading account data.
-        accounts (dict): A dictionary storing Account instances, keyed by account number.
-
-    Methods:
-        create_account: Creates a new account with a unique account number.
-        view_account: Displays the details of an account.
-        deposit: Deposits money into an account.
-        withdraw: Withdraws money from an account.
-        load_from_file: Loads account data from a file.
-        save_to_file: Saves account data to a file.
-        is_account_exist: Checks if an account exists by account number. If exist, it returns Account
+    ----------
+    accounts : dict[int, Account]
+        A dictionary of accounts in the bank.
     """
-    filename = r"lesson-8/homework/accounts.txt"
-    
+
+    FILENAME = r"lesson-8/homework/accounts.json"
+
     def __init__(self):
-        """
-        Initializes the Bank and loads account data from a file, if available.
-        """
-        self.accounts = self.load_from_file()
+        """Initializes the bank with accounts loaded from a file."""
+        self.accounts = self._load_from_file()
 
-    def create_account(self, name: str, initial_deposit: float | int) -> None:
+    def _load_from_file(self) -> dict[int, Account]:
         """
-        Creates a new bank account with a unique account number.
-
-        Args:
-            name (str): The name of the account holder.
-            initial_deposit (float | int): The initial deposit for the account.
+        Loads accounts from a file.
 
         Returns:
-            Account: The newly created Account instance.
-        """
-        # Generate a unique account number
-        if self.accounts:
-            account_number = max(self.accounts.keys()) + 1  # Next available account number
-        else:
-            account_number = 1000  # Start with account number 1000 if no accounts exist
+        -------
+        dict[int, Account]
+            A dictionary of accounts loaded from the file.
 
-        # Create and store the new account
+        Raises:
+        ------
+        FileNotFoundError
+            If the file is not found.
+        json.JSONDecodeError
+            If the file content is not valid JSON.
+        """
+        try:
+            with open(self.FILENAME, "r") as file:
+                data = json.load(file)
+                return {int(acc_num): Account.from_dict(acc_data) for acc_num, acc_data in data.items()}
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {}
+
+    def _save_to_file(self) -> None:
+        """Saves accounts to a file."""
+        with open(self.FILENAME, "w") as file:
+            data = {acc_num: acc.to_dict() for acc_num, acc in self.accounts.items()}
+            json.dump(data, file, indent=4)
+
+    def create_account(self, name: str, initial_deposit: float) -> None:
+        """
+        Creates a new account.
+
+        Parameters:
+        ----------
+        name : str
+            The name of the account holder.
+        initial_deposit : float
+            The initial deposit amount.
+        """
+        account_number = max(self.accounts.keys(), default=1000) + 1
         self.accounts[account_number] = Account(account_number, name, initial_deposit)
+        print(f"Account created successfully! Account Number: {account_number}")
 
     def view_account(self, account_number: int) -> None:
         """
-        Displays the details of an account by account number.
+        Views an account.
 
-        Args:
-            account_number (int): The account number to view.
-
-        Raises:
-            ValueError: If the account does not exist.
-        """
-        try:
-            account = self.is_account_exist(account_number)
-            print(account)
-        except ValueError as e:
-            print(e)
-
-    def deposit(self, account_number: int, amount: int | float) -> None:
-        """
-        Deposits a specified amount of money into an account.
-
-        Args:
-            account_number (int): The account number to deposit into.
-            amount (float | int): The amount to deposit.
+        Parameters:
+        ----------
+        account_number : int
+            The account number to view.
 
         Raises:
-            ValueError: If the deposit amount is not positive.
+        ------
+        ValueError
+            If the account does not exist.
         """
-        try:
-            account = self.is_account_exist(account_number)
-            if amount <= 0:
-                raise ValueError("Deposit amount must be positive.")
-            account.balance += amount
-        except ValueError as e:
-            print(e)
+        account = self._get_account(account_number)
+        print(account)
 
-    def withdraw(self, account_number: int, amount: int | float):
+    def deposit(self, account_number: int, amount: float) -> None:
         """
-        Withdraws a specified amount of money from an account.
+        Deposits an amount into an account.
 
-        Args:
-            account_number (int): The account number to withdraw from.
-            amount (float | int): The amount to withdraw.
+        Parameters:
+        ----------
+        account_number : int
+            The account number to deposit into.
+        amount : float
+            The amount to deposit.
 
         Raises:
-            ValueError: If the withdrawal amount exceeds the account balance or is invalid.
+        ------
+        ValueError
+            If the account does not exist or the amount is invalid.
         """
-        try:
-            account = self.is_account_exist(account_number)
-            if amount > account.balance:
-                raise ValueError("Insufficient funds.")
-            account.balance -= amount
-        except ValueError as e:
-            print(e)
+        account = self._get_account(account_number)
+        account.balance += amount
+        print(f"Deposited {amount:.2f}. New balance: {account.balance:.2f}")
 
-    def load_from_file(self):
+    def withdraw(self, account_number: int, amount: float) -> None:
         """
-        Loads account data from a file.
+        Withdraws an amount from an account.
+
+        Parameters:
+        ----------
+        account_number : int
+            The account number to withdraw from.
+        amount : float
+            The amount to withdraw.
+
+        Raises:
+        ------
+        ValueError
+            If the account does not exist, the amount is invalid, or there are insufficient funds.
+        """
+        account = self._get_account(account_number)
+        if amount > account.balance:
+            raise ValueError("Insufficient funds.")
+        account.balance -= amount
+        print(f"Withdrew {amount:.2f}. New balance: {account.balance:.2f}")
+
+    def _get_account(self, account_number: int) -> Account:
+        """
+        Gets an account by account number.
+
+        Parameters:
+        ----------
+        account_number : int
+            The account number to get.
 
         Returns:
-            dict: A dictionary of Account instances keyed by account number.
+        -------
+        Account
+            The account object.
 
         Raises:
-            FileNotFoundError: If the file does not exist.
-            json.JSONDecodeError: If the file content is not valid JSON.
-        """
-        try:
-            with open(self.filename, "r") as f:
-                data = json.load(f)
-                # Convert loaded data into Account instances
-                return {account_data["account_number"]: Account.from_dict(account_data) for account_data in data.values()}
-        except (FileNotFoundError, json.JSONDecodeError):
-            print("No previous data found, starting fresh.")
-            return {}
-
-    def save_to_file(self):
-        """
-        Saves all account data to a file in JSON format.
-        """
-        with open(self.filename, "w") as f:
-            # Convert Account instances to dictionaries before saving
-            json.dump({account_number: account.to_dict() for account_number, account in self.accounts.items()}, f, indent=4)
-
-    def is_account_exist(self, account_number: int) -> Account:
-        """
-        Checks if an account exists in the bank by its account number.
-
-        Args:
-            account_number (int): The account number to check.
-
-        Returns:
-            Account: The Account instance if it exists.
-
-        Raises:
-            ValueError: If the account number does not exist.
+        ------
+        ValueError
+            If the account does not exist.
         """
         if account_number not in self.accounts:
-            raise ValueError("Account not found.")
+            raise ValueError("Account does not exist.")
         return self.accounts[account_number]
 
 
-def main():
+def parse_input(prompt: str, input_type: type) -> any:
+    """
+    Parses input from the user.
+
+    Parameters:
+    ----------
+    prompt : str
+        The prompt to display to the user.
+    input_type : type
+        The type to convert the input to.
+
+    Returns:
+    -------
+    any
+        The parsed input.
+
+    Raises:
+    ------
+    ValueError
+        If the input is not valid.
+    """
+    while True:
+        try:
+            return input_type(input(prompt).strip())
+        except ValueError:
+            print(f"Invalid input! Please enter a valid {input_type.__name__}.")
+
+
+def interface():
+    """Runs the bank system interface."""
     bank = Bank()
 
     while True:
@@ -213,40 +320,48 @@ def main():
         print("3. Deposit")
         print("4. Withdraw")
         print("5. Save and Exit")
-        
-        try:
-            choice = input("Enter your choice (1-5): ").strip()
 
-            if choice == "1":
-                name = input("Enter account holder's name: ").strip()
-                initial_deposit = float(input("Enter initial deposit amount: ").strip())
+        choice = input("Enter your choice (1-5): ").strip()
+
+        if choice == "1":
+            name = input("Enter account holder's name: ").strip()
+            initial_deposit = parse_input("Enter initial deposit amount: ", float)
+            try:
                 bank.create_account(name, initial_deposit)
+            except ValueError as e:
+                print(e)
 
-            elif choice == "2":
-                account_number = int(input("Enter account number to view: ").strip())
+        elif choice == "2":
+            account_number = parse_input("Enter account number to view: ", int)
+            try:
                 bank.view_account(account_number)
+            except ValueError as e:
+                print(e)
 
-            elif choice == "3":
-                account_number = int(input("Enter account number to deposit into: ").strip())
-                amount = float(input("Enter amount to deposit: ").strip())
+        elif choice == "3":
+            account_number = parse_input("Enter account number to deposit into: ", int)
+            amount = parse_input("Enter amount to deposit: ", float)
+            try:
                 bank.deposit(account_number, amount)
+            except ValueError as e:
+                print(e)
 
-            elif choice == "4":
-                account_number = int(input("Enter account number to withdraw from: ").strip())
-                amount = float(input("Enter amount to withdraw: ").strip())
+        elif choice == "4":
+            account_number = parse_input("Enter account number to withdraw from: ", int)
+            amount = parse_input("Enter amount to withdraw: ", float)
+            try:
                 bank.withdraw(account_number, amount)
+            except ValueError as e:
+                print(e)
 
-            elif choice == "5":
-                bank.save_to_file()
-                print("All account data saved to file. Exiting.")
-                break
-            
-            else:
-                print("Invalid choice! Please choose a valid option.")
-        except ValueError as e:
-            print(f"Invalid input: {e}")
-        except Exception as e:
-            print(f"Unexpected error: {e}")
+        elif choice == "5":
+            bank._save_to_file()
+            print("All account data saved to file. Exiting.")
+            break
+
+        else:
+            print("Invalid choice! Please select a valid option.")
+
 
 if __name__ == "__main__":
-    main()
+    interface()
