@@ -3,6 +3,7 @@ from .member import Member
 from .errors import MemberNotFoundException, BookNotFoundException
 
 
+
 class LibManager:
     def __init__(self) -> None:
         self.__books = []
