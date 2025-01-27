@@ -1,5 +1,5 @@
 #gitignore folder and files
 **/data/
-venv/
+.venv/
 apikeys.py
 __pycache__/
